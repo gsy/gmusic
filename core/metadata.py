@@ -4,6 +4,7 @@ import os, sys
 import logging
 from mutagen import File as MutagenFile
 import sqlite3
+
 # """
 # Mutagen Tag support
 # """
