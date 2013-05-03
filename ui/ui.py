@@ -13,6 +13,9 @@ import warnings
 import json
 # from lyric import Lyricsboard
 
+sys.path.append("..")
+from lib import preference
+
 class GUI_Controller:
     """ The GUI Controller for the application """
     def __init__(self):
@@ -21,10 +24,11 @@ class GUI_Controller:
         self.current_tree_iter = None
         # dirty
         self.track_iter_list = []
+        self.preference = preference.preference()
 
-        # self.file_cycle_mode = myConfig.file_cycle_mode
-        # self.shuffle_mode = myConfig.shuffle_mode
-        # self.play_list_mode = myConfig.play_list_mode
+        self.file_cycle_mode = self.preference.file_cycle_mode
+        self.shuffle_mode = self.preference.shuffle_mode
+        self.play_list_mode = self.preference.play_list_mode
 
         self.supported_media_formats = ["mp3","wav","ogg","m4a","flac","mp4","mp2","aac","flv","MP3","WAV","OGG","M4A","FLAC","MP4","MP2","AAC","FLV"]
         # a vertical box to organize the widgets
@@ -98,9 +102,11 @@ class GUI_Controller:
         # self.window.set_default_size(800,600)
         # self.window.set_position(gtk.WIN_POS_CENTER)
         
-        # self.window.set_default_size(myConfig.window_width,myConfig.window_height)
-        # self.window.move(myConfig.window_xpos,myConfig.window_ypos)
-
+        self.window.set_default_size(self.preference.window_width,
+                                     self.preference.window_height)
+        
+        self.window.move(self.preference.window_xpos,
+                         self.preference.window_ypos)
         
         self.window.drag_dest_set(0,[],0)
         self.window.connect("drag_motion",self.on_drag_motion)
@@ -207,7 +213,7 @@ class GUI_Controller:
         self.volume_button = gtk.VolumeButton()
         self.volume_button.connect("value-changed",self.on_volume_changed)
         
-        # self.volume_button.set_value(myConfig.volume)
+        self.volume_button.set_value(self.preference.volume)
         
         self.controlbox.pack_end(self.volume_button,False,False,0)
 
@@ -530,7 +536,7 @@ class GUI_Controller:
         dialog.set_default_response(gtk.RESPONSE_OK)
         # dialog.set_current_folder("~")
         
-        dialog.set_current_folder(myConfig.most_recent_directory)
+        dialog.set_current_folder(self.preference.most_recent_directory)
         
         filter = gtk.FileFilter()
         filter.set_name("All files")
@@ -559,7 +565,7 @@ class GUI_Controller:
         elif response == gtk.RESPONSE_CANCEL:
             print 'Closed,no files selected'            
             
-        myConfig.most_recent_directory = dialog.get_current_folder()
+        self.preference.most_recent_directory = dialog.get_current_folder()
             
         dialog.destroy()        
 
@@ -572,7 +578,7 @@ class GUI_Controller:
                                         gtk.STOCK_OPEN,
                                         gtk.RESPONSE_OK))
         dialog.set_default_response(gtk.RESPONSE_OK)        
-        dialog.set_current_folder(myConfig.most_recent_directory)
+        dialog.set_current_folder(self.preference.most_recent_directory)
         
         response = dialog.run()
         if response == gtk.RESPONSE_OK:
@@ -581,7 +587,7 @@ class GUI_Controller:
         elif response == gtk.RESPONSE_CANCEL:
             print "Close,no folder selected"            
 
-        myConfig.most_recent_directory = dialog.get_current_folder()
+        self.preference.most_recent_directory = dialog.get_current_folder()
         
         dialog.destroy()
         self.play_list_store.clear()
@@ -1066,7 +1072,7 @@ class GUI_Controller:
         self.play()        
         
     def on_window_delete(self,widget,data=None):
-        myConfig.write_to_file(self)
+        self.preference.write_to_file(self)
         return False
     
     def convert_sec(self,s):
