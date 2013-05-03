@@ -247,6 +247,7 @@ class GUI_Controller:
         self.play_list_store = self.create_model()
         # self.play_list_store.foreach(self.load_play_list_func,self.play_list_store)
         
+        # 加载播放列表
         # self.load_play_list()
 
         # artist filter model
